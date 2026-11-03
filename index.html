@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>แต้มสะสม Q-CHANG Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  :root {
+    --navy: #121F2E; --navy-2: #1C2B3C; --grey: #D2D3D4; --surface-alt: #EEF0F1;
+    --ink: #121F2E; --ink-muted: #4D5866; --line: #D2D3D4; --field: #8A939D;
+    --orange: #EF4F30; --orange-text: #C73A1F; --white: #FFFFFF;
+    --font: 'Poppins', 'Prompt', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--white); color: var(--ink); font-family: var(--font); -webkit-text-size-adjust: 100%; }
+  body { padding-top: env(safe-area-inset-top, 0px); }
+  button, input, textarea, select { font-family: inherit; color: inherit; }
+  a { color: var(--orange-text); }
+  :focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+  #app { max-width: 480px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 32px 24px; text-align: center; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--surface-alt); border-top-color: var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+
+  .page { flex: 1; display: flex; flex-direction: column; padding: 32px 24px calc(24px + env(safe-area-inset-bottom, 0px)); gap: 28px; }
+  .grow { flex: 1; }
+  .brand { display: flex; justify-content: center; }
+  .brand img { width: 104px; height: auto; }
+  .wordmark { font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+  .wordmark span { color: var(--orange); }
+  .ribbon { align-self: center; background: var(--navy); color: var(--grey); font-size: 13px; line-height: 16px; font-weight: 600; letter-spacing: 0.08em; padding: 6px 14px; border-radius: 2px; }
+  h1 { margin: 0; font-size: 24px; line-height: 34px; font-weight: 700; }
+  h2 { margin: 0; font-size: 20px; line-height: 30px; font-weight: 700; }
+  .lead { margin: 0; font-size: 15px; line-height: 25px; color: var(--ink-muted); }
+  .muted { color: var(--ink-muted); }
+  .small { font-size: 13px; line-height: 20px; }
+  .stack { display: flex; flex-direction: column; gap: 8px; }
+  .tc { text-align: center; }
+
+  .chip-line { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface-alt); border-radius: 4px; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: var(--grey); display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; overflow: hidden; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  label { font-size: 14px; line-height: 22px; font-weight: 600; }
+  .input, textarea.input, select.input { width: 100%; min-height: 52px; padding: 0 14px; border: 1px solid var(--field); border-radius: 2px; font-size: 17px; background: var(--white); }
+  textarea.input { padding: 12px 14px; font-size: 15px; line-height: 24px; resize: vertical; min-height: 88px; }
+  .error { color: var(--orange-text); font-size: 14px; line-height: 22px; font-weight: 600; }
+
+  .btn { min-height: 52px; width: 100%; border: 0; border-radius: 4px; font-size: 17px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; padding: 0 16px; }
+  .btn-primary { background: var(--orange); color: var(--navy); }
+  .btn-dark { background: var(--navy); color: var(--white); font-weight: 600; font-size: 16px; }
+  .btn-outline { background: var(--white); color: var(--navy); border: 1px solid var(--navy); font-weight: 600; font-size: 16px; min-height: 48px; }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+  .topbar { height: 60px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); flex: none; background: var(--white); }
+  .topbar img { width: 160px; height: auto; }
+  .backbar { height: 56px; padding: 0 8px; display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--line); flex: none; }
+  .icon-btn { width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink); border-radius: 4px; }
+  .backbar span { font-size: 17px; font-weight: 600; }
+
+  .scroll { flex: 1; padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 24px; }
+  .greet { font-size: 20px; line-height: 30px; font-weight: 700; margin: 0; }
+
+  .points { background: var(--navy); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 16px; color: var(--grey); }
+  .points .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .points .label { font-size: 13px; line-height: 16px; font-weight: 600; letter-spacing: 0.08em; }
+  .points .tag { font-size: 12px; line-height: 16px; font-weight: 600; padding: 4px 8px; border: 1px solid var(--ink-muted); border-radius: 2px; }
+  .points .num { display: flex; align-items: baseline; gap: 8px; }
+  .points .num b { font-size: 44px; line-height: 48px; font-weight: 800; color: var(--white); letter-spacing: -0.01em; }
+  .points .num span { font-size: 18px; font-weight: 600; color: var(--orange); }
+  .points .rule { height: 1px; background: #34465A; }
+  .points a { color: var(--grey); font-size: 14px; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .chip { flex: none; height: 40px; padding: 0 14px; border-radius: 4px; font-size: 14px; cursor: pointer; white-space: nowrap; background: var(--white); color: var(--ink); border: 1px solid var(--field); font-weight: 500; }
+  .chip[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); font-weight: 600; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .card { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--white); cursor: pointer; text-align: left; padding: 0; color: var(--ink); }
+  .card .img { height: 118px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; position: relative; }
+  .card .img img { width: 100%; height: 100%; object-fit: cover; }
+  .card .body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .card .name { font-size: 14px; line-height: 21px; font-weight: 500; min-height: 42px; }
+  .card .pts { font-size: 18px; line-height: 24px; font-weight: 700; }
+  .card .pts small { font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+  .card .meta { font-size: 12px; line-height: 18px; color: var(--ink-muted); }
+  .card .meta.short { color: var(--orange-text); font-weight: 600; }
+  .soldout { position: absolute; top: 8px; left: 8px; background: var(--navy); color: var(--grey); font-size: 11px; line-height: 14px; font-weight: 600; padding: 4px 6px; border-radius: 2px; }
+
+  .hero-img { height: 220px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; flex: none; }
+  .hero-img img { width: 100%; height: 100%; object-fit: cover; }
+  .detail { padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; }
+  .cat { align-self: flex-start; background: var(--navy); color: var(--grey); font-size: 12px; line-height: 14px; font-weight: 600; padding: 5px 8px; border-radius: 2px; }
+  .price { display: flex; align-items: baseline; gap: 6px; }
+  .price b { font-size: 30px; line-height: 36px; font-weight: 800; color: var(--orange); }
+  .price span { font-size: 15px; font-weight: 600; }
+  .qty-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stepper { display: flex; align-items: center; gap: 4px; }
+  .stepper button { width: 44px; height: 44px; border: 1px solid var(--field); border-radius: 4px; background: var(--white); font-size: 20px; cursor: pointer; }
+  .stepper b { width: 40px; text-align: center; font-size: 18px; }
+  .opt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 12px 14px; border-radius: 4px; background: var(--white); cursor: pointer; min-height: 44px; border: 1px solid var(--field); width: 100%; }
+  .opt[aria-pressed="true"] { border: 2px solid var(--orange); padding: 11px 13px; }
+  .opt b { font-size: 15px; }
+  .summary { background: var(--surface-alt); border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 22px; }
+  .summary .r { display: flex; justify-content: space-between; }
+  .summary .total { font-size: 16px; font-weight: 600; }
+  .summary .total b { font-weight: 800; }
+  .footer-cta { position: sticky; bottom: 0; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--white); }
+
+  .sheet-wrap { position: fixed; inset: 0; background: rgba(18, 31, 46, 0.6); display: flex; flex-direction: column; justify-content: flex-end; z-index: 20; }
+  .sheet { background: var(--white); border-radius: 8px 8px 0 0; padding: 24px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 16px; max-width: 480px; width: 100%; margin: 0 auto; }
+  .done-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center; align-self: center; }
+
+  .stat2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .stat2 > div { border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+  .stat2 .dark { background: var(--navy); color: var(--grey); }
+  .stat2 .dark b { color: var(--white); }
+  .stat2 .light { background: var(--surface-alt); }
+  .stat2 span { font-size: 13px; line-height: 18px; }
+  .stat2 b { font-size: 24px; line-height: 30px; font-weight: 800; }
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+  .tab { height: 48px; border: 0; background: transparent; font-size: 15px; cursor: pointer; color: var(--ink-muted); font-weight: 500; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+  .tab[aria-selected="true"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--orange); }
+  .hist { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--surface-alt); align-items: flex-start; }
+  .hist .ic { flex: none; width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+  .hist .ic.earn { background: var(--navy); }
+  .hist .ic.spend { background: var(--surface-alt); }
+  .hist .t { font-size: 15px; line-height: 22px; font-weight: 600; }
+  .hist .amt { font-size: 16px; line-height: 22px; font-weight: 700; white-space: nowrap; }
+  .hist .amt.spend { color: var(--ink-muted); }
+  .badge { align-self: flex-start; margin-top: 4px; font-size: 12px; line-height: 16px; font-weight: 600; padding: 3px 8px; border-radius: 2px; background: var(--surface-alt); color: var(--ink-muted); }
+  .badge.wait { background: var(--orange); color: var(--navy); }
+
+  nav.bottom { position: sticky; bottom: 0; flex: none; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--white); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  nav.bottom button { height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; background: transparent; color: var(--ink-muted); font-size: 12px; font-weight: 500; border-top: 3px solid transparent; cursor: pointer; }
+  nav.bottom button[aria-current="page"] { color: var(--ink); font-weight: 700; border-top-color: var(--orange); }
+
+  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); max-width: 448px; margin: 0 auto; background: var(--navy); color: var(--white); padding: 12px 16px; border-radius: 4px; font-size: 14px; line-height: 22px; z-index: 30; }
+  .empty { padding: 32px 0; text-align: center; color: var(--ink-muted); font-size: 15px; }
+</style>
+</head>
+<body>
+<div id="app"><div class="center"><div class="spinner" role="status" aria-label="กำลังโหลด"></div></div></div>
+<div id="toast-root" aria-live="polite"></div>
+
+<script>
+/* ========= ตั้งค่า ========= */
+const CONFIG = {
+  LIFF_ID: 'ใส่_LIFF_ID',                                   // จาก LINE Developers › LIFF
+  API_URL: 'https://script.google.com/macros/s/ใส่_DEPLOYMENT_ID/exec', // จาก Apps Script › Deploy
+  LOGO_URL: '',          // ลิงก์โลโก้แนวนอน (เว้นว่างได้)
+  LOGO_STACK_URL: ''     // ลิงก์โลโก้แนวตั้งสำหรับหน้าเชื่อมบัญชี (เว้นว่างได้)
+};
+
+/* ========= สถานะ ========= */
+const S = {
+  idToken: null, profile: null, data: null,
+  view: 'loading', cat: 'all', reward: null,
+  qty: 1, method: 'pickup', branch: '', address: '',
+  sheet: null, result: null, linkError: '', busy: false,
+  history: null, histTab: 'all'
+};
+
+const $app = document.getElementById('app');
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = (n) => Number(n || 0).toLocaleString('en-US');
+const thDate = (iso) => {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }) + ' · ' +
+    d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+};
+
+/* ========= ไอคอน ========= */
+const ICON = {
+  back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  tool: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#121F2E" stroke-width="1.5" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 0-5-5z"/><path d="M3 21l6-6"/></svg>',
+  gift: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#121F2E" stroke-width="1.5" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13M3 12h18"/><path d="M12 8c-2-4-6-4-6-1s6 1 6 1 6 2 6-1-4-3-6 1z"/></svg>',
+  home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg>',
+  clock: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  check: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EF4F30" stroke-width="2.5" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+  plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  box: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#121F2E" stroke-width="2" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13M3 12h18"/></svg>'
+};
+
+function rewardImage(r, big) {
+  if (r.image) return '<img src="' + esc(r.image) + '" alt="" loading="lazy">';
+  const icon = /เครื่องมือ|tool/i.test(r.category) ? ICON.tool : ICON.gift;
+  return big ? icon.replace('width="48" height="48"', 'width="96" height="96"').replace('stroke-width="1.5"', 'stroke-width="1.2"') : icon;
+}
+
+function logo(stacked) {
+  const url = stacked ? (CONFIG.LOGO_STACK_URL || CONFIG.LOGO_URL) : CONFIG.LOGO_URL;
+  return url ? '<img src="' + esc(url) + '" alt="Q-CHANG Academy">'
+             : '<span class="wordmark">Q-CHANG <span>Academy</span></span>';
+}
+
+/* ========= API ========= */
+async function api(action, payload) {
+  const res = await fetch(CONFIG.API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ action: action, idToken: S.idToken }, payload || {}))
+  });
+  const data = await res.json();
+  if (!data.ok) {
+    if (data.error === 'AUTH' && !sessionStorage.getItem('relogin')) {
+      sessionStorage.setItem('relogin', '1');
+      liff.logout();
+      liff.login({ redirectUri: location.href });
+      throw new Error('กำลังเข้าสู่ระบบใหม่');
+    }
+    if (data.error === 'NOT_LINKED') { S.data = { linked: false }; go('link'); }
+    throw new Error(data.message || 'เกิดข้อผิดพลาด');
+  }
+  sessionStorage.removeItem('relogin');
+  return data;
+}
+
+function toast(msg) {
+  const root = document.getElementById('toast-root');
+  root.innerHTML = '<div class="toast" role="status">' + esc(msg) + '</div>';
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { root.innerHTML = ''; }, 4000);
+}
+
+/* ========= เริ่มต้น ========= */
+async function init() {
+  try {
+    await liff.init({ liffId: CONFIG.LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+    S.idToken = liff.getIDToken();
+    S.profile = await liff.getProfile().catch(() => null);
+    const d = await api('bootstrap');
+    applyHome(d);
+    go(d.linked ? 'home' : 'link');
+  } catch (err) {
+    S.fatal = err.message || String(err);
+    go('error');
+  }
+}
+
+function applyHome(d) {
+  S.data = d;
+  if (d.linked) {
+    if (!S.branch && d.branches && d.branches.length) S.branch = d.branches[0];
+    if (!S.address) S.address = d.tech.address || '';
+    if (!d.branches || !d.branches.length) S.method = 'delivery';
+  }
+}
+
+function go(view) {
+  S.view = view;
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ========= หน้าจอ ========= */
+function render() {
+  const v = S.view;
+  if (v === 'loading') $app.innerHTML = '<div class="center"><div class="spinner" role="status" aria-label="กำลังโหลด"></div></div>';
+  else if (v === 'error') $app.innerHTML = viewError();
+  else if (v === 'link') $app.innerHTML = viewLink();
+  else if (v === 'linked') $app.innerHTML = viewLinked();
+  else if (v === 'home') $app.innerHTML = viewHome() + nav('home');
+  else if (v === 'reward') $app.innerHTML = viewReward();
+  else if (v === 'history') $app.innerHTML = viewHistory() + nav('history');
+}
+
+function viewError() {
+  return '<div class="center"><h1>เปิดระบบไม่สำเร็จ</h1><p class="lead">' + esc(S.fatal) +
+    '</p><button class="btn btn-dark" data-act="reload" style="max-width:280px">ลองใหม่</button></div>';
+}
+
+function viewLink() {
+  const p = S.profile || {};
+  const name = p.displayName || (S.data && S.data.lineName) || 'บัญชี LINE';
+  const pic = p.pictureUrl || (S.data && S.data.picture);
+  return '<form class="page" data-form="link" novalidate>' +
+    '<div class="brand">' + logo(true) + '</div>' +
+    '<div class="stack tc"><div class="ribbon">POINT REWARDS</div>' +
+    '<h1 style="margin-top:8px">เชื่อมบัญชี LINE กับระบบ</h1>' +
+    '<p class="lead">ทำครั้งแรกครั้งเดียว ครั้งต่อไปกดจากเมนู LINE OA แล้วเข้าใช้งานได้ทันที</p></div>' +
+    '<div class="chip-line"><div class="avatar">' + (pic ? '<img src="' + esc(pic) + '" alt="">' : esc(name.charAt(0))) + '</div>' +
+    '<div class="stack" style="gap:0;flex:1;min-width:0"><span class="small muted">เข้าสู่ระบบด้วยบัญชี LINE</span>' +
+    '<span style="font-size:16px;font-weight:600">' + esc(name) + '</span></div></div>' +
+    '<div class="stack"><label for="ident">เบอร์โทรศัพท์ หรือรหัสทีมช่าง</label>' +
+    '<input class="input" id="ident" name="ident" type="text" autocomplete="tel" placeholder="08X-XXX-XXXX หรือรหัสทีม" required>' +
+    '<span class="small muted">ใช้เบอร์เดียวกับที่ให้ไว้ตอนสมัครเป็นช่าง Q-CHANG<br>หรือรหัสทีมช่าง SCG Roof Expert</span>' +
+    (S.linkError ? '<span class="error" role="alert">' + esc(S.linkError) + '</span>' : '') + '</div>' +
+    '<div class="grow"></div>' +
+    '<div class="stack" style="gap:14px"><button class="btn btn-primary" type="submit"' + (S.busy ? ' disabled' : '') + '>' +
+    (S.busy ? 'กำลังเชื่อมบัญชี…' : 'เชื่อมบัญชี') + '</button>' +
+    '<p class="small muted tc" style="margin:0">หาข้อมูลไม่พบ? ติดต่อทีม Academy</p></div></form>';
+}
+
+function viewLinked() {
+  const t = S.data.tech;
+  return '<div class="page" style="padding-top:64px">' +
+    '<div class="stack tc" style="align-items:center;gap:16px"><div class="done-icon" style="width:80px;height:80px">' + ICON.check + '</div>' +
+    '<h1>เชื่อมบัญชีเรียบร้อย</h1><p class="lead">บัญชี LINE นี้ผูกกับข้อมูลช่างของคุณแล้ว</p></div>' +
+    '<div class="summary" style="background:var(--white);border:1px solid var(--line)">' +
+    '<div class="r"><span class="muted">ชื่อ</span><b>' + esc(t.name) + '</b></div>' +
+    '<div class="r"><span class="muted">เบอร์โทร</span><b>' + esc(t.phone) + '</b></div>' +
+    (t.teamCode ? '<div class="r"><span class="muted">รหัสทีม</span><b>' + esc(t.teamCode) + '</b></div>' : '') +
+    '<div class="r"><span class="muted">บัญชี LINE</span><b>' + esc((S.profile && S.profile.displayName) || S.data.lineName || '') + '</b></div></div>' +
+    '<p class="small muted" style="margin:0">ครั้งต่อไปกดเมนูแต้มสะสมใน LINE OA ระบบจะพาเข้าหน้าแรกทันที</p>' +
+    '<div class="grow"></div><button class="btn btn-primary" data-act="home">เริ่มใช้งาน</button></div>';
+}
+
+function viewHome() {
+  const d = S.data;
+  const cats = ['all'].concat(Array.from(new Set(d.rewards.map((r) => r.category))));
+  const list = d.rewards.filter((r) => S.cat === 'all' || r.category === S.cat);
+  const cards = list.map((r) => {
+    const short = r.points > d.balance;
+    const out = r.stock <= 0;
+    const meta = out ? '<span class="meta">หมดชั่วคราว</span>'
+      : short ? '<span class="meta short">ขาดอีก ' + fmt(r.points - d.balance) + ' แต้ม</span>'
+      : '<span class="meta">เหลือ ' + fmt(r.stock) + ' ชิ้น</span>';
+    return '<button class="card" data-act="open" data-id="' + esc(r.id) + '"><div class="img">' + rewardImage(r) +
+      (out ? '<span class="soldout">หมดชั่วคราว</span>' : '') + '</div><div class="body"><span class="name">' + esc(r.name) +
+      '</span><span class="pts">' + fmt(r.points) + ' <small>แต้ม</small></span>' + meta + '</div></button>';
+  }).join('');
+  return '<header class="topbar">' + logo(false) + '</header>' +
+    '<main class="scroll">' +
+    '<p class="greet">สวัสดี คุณ' + esc(d.tech.name) + '</p>' +
+    '<section class="points" aria-label="แต้มสะสม"><div class="row"><span class="label">แต้มสะสมของคุณ</span><span class="tag">' + esc(d.tech.phone) + '</span></div>' +
+    '<div class="num"><b>' + fmt(d.balance) + '</b><span>แต้ม</span></div><div class="rule"></div>' +
+    '<div class="row"><span class="small" style="color:#9AA3AD">แลกของรางวัลได้ทันทีด้านล่าง</span><a href="#" data-act="history">ดูประวัติ</a></div></section>' +
+    '<section class="stack" style="gap:12px"><div class="row" style="display:flex;justify-content:space-between;align-items:baseline"><h2>ของรางวัล</h2><span class="small muted">' + list.length + ' รายการ</span></div>' +
+    '<div class="chips">' + cats.map((c) => '<button class="chip" data-act="cat" data-cat="' + esc(c) + '" aria-pressed="' + (S.cat === c) + '">' + (c === 'all' ? 'ทั้งหมด' : esc(c)) + '</button>').join('') + '</div></section>' +
+    (cards ? '<div class="grid">' + cards + '</div>' : '<p class="empty">ยังไม่มีของรางวัลในหมวดนี้</p>') +
+    '</main>';
+}
+
+function viewReward() {
+  const d = S.data;
+  const r = S.reward;
+  const cost = r.points * S.qty;
+  const maxQty = Math.max(1, Math.min(r.stock, r.monthlyLeft == null ? 20 : r.monthlyLeft, 20));
+  const canRedeem = r.stock > 0 && (r.monthlyLeft == null || r.monthlyLeft > 0) && d.balance >= cost;
+  const branches = d.branches || [];
+  let cta = 'แลกเลย · ' + fmt(cost) + ' แต้ม';
+  if (r.stock <= 0) cta = 'หมดชั่วคราว';
+  else if (r.monthlyLeft === 0) cta = 'เดือนนี้แลกครบสิทธิ์แล้ว';
+  else if (d.balance < cost) cta = 'แต้มไม่พอ ขาดอีก ' + fmt(cost - d.balance) + ' แต้ม';
+
+  const methodHtml = '<div class="stack" style="gap:10px"><span style="font-size:15px;font-weight:600">วิธีรับของรางวัล</span>' +
+    (branches.length ? '<button class="opt" data-act="method" data-m="pickup" aria-pressed="' + (S.method === 'pickup') + '"><b>รับที่ศูนย์ Q-CHANG</b><span class="small muted">ทีมงานจะติดต่อเมื่อของพร้อม</span></button>' : '') +
+    (S.method === 'pickup' && branches.length ? '<select class="input" id="branch" aria-label="เลือกศูนย์">' + branches.map((b) => '<option' + (b === S.branch ? ' selected' : '') + '>' + esc(b) + '</option>').join('') + '</select>' : '') +
+    '<button class="opt" data-act="method" data-m="delivery" aria-pressed="' + (S.method === 'delivery') + '"><b>จัดส่งตามที่อยู่</b><span class="small muted">ระบบจำที่อยู่ไว้ใช้ครั้งต่อไป</span></button>' +
+    (S.method === 'delivery' ? '<label for="addr" style="margin-top:4px">ที่อยู่จัดส่ง</label><textarea class="input" id="addr" rows="3" maxlength="300" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์">' + esc(S.address) + '</textarea>' : '') +
+    '</div>';
+
+  return '<header class="backbar"><button class="icon-btn" data-act="home" aria-label="ย้อนกลับ">' + ICON.back + '</button><span>รายละเอียดของรางวัล</span></header>' +
+    '<main style="flex:1"><div class="hero-img">' + rewardImage(r, true) + '</div><div class="detail">' +
+    '<div class="stack"><span class="cat">' + esc(r.category) + '</span><h1>' + esc(r.name) + '</h1>' +
+    '<div class="price"><b>' + fmt(r.points) + '</b><span>แต้ม / ชิ้น</span></div>' +
+    '<span class="small muted">คงเหลือ ' + fmt(r.stock) + ' ชิ้น' + (r.monthlyLimit ? ' · แลกได้อีก ' + r.monthlyLeft + ' ชิ้นในเดือนนี้' : '') + '</span></div>' +
+    (r.description ? '<p class="lead" style="white-space:pre-line">' + esc(r.description) + '</p>' : '') +
+    '<div class="qty-row"><span style="font-size:15px;font-weight:600">จำนวน</span><div class="stepper">' +
+    '<button data-act="qty" data-d="-1" aria-label="ลดจำนวน">−</button><b aria-live="polite">' + S.qty + '</b>' +
+    '<button data-act="qty" data-d="1" data-max="' + maxQty + '" aria-label="เพิ่มจำนวน">+</button></div></div>' +
+    methodHtml +
+    '<div class="summary"><div class="r"><span class="muted">แต้มที่มี</span><b>' + fmt(d.balance) + '</b></div>' +
+    '<div class="r"><span class="muted">ใช้แลก</span><b>−' + fmt(cost) + '</b></div><div style="height:1px;background:var(--line)"></div>' +
+    '<div class="r total"><span>คงเหลือหลังแลก</span><b>' + fmt(Math.max(0, d.balance - cost)) + ' แต้ม</b></div></div>' +
+    '</div></main>' +
+    '<div class="footer-cta"><button class="btn btn-primary" data-act="confirm"' + (canRedeem ? '' : ' disabled') + '>' + cta + '</button></div>' +
+    (S.sheet ? viewSheet(cost) : '');
+}
+
+function viewSheet(cost) {
+  const r = S.reward;
+  if (S.sheet === 'done') {
+    return '<div class="sheet-wrap"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="done-h" style="text-align:center">' +
+      '<div class="done-icon">' + ICON.check + '</div><h2 id="done-h">แลกสำเร็จ</h2>' +
+      '<p class="lead">เลขที่คำขอ ' + esc(S.result.no) + '<br>ติดตามสถานะได้ที่เมนูประวัติ ทีมงานจะติดต่อเมื่อของรางวัลพร้อม</p>' +
+      '<button class="btn btn-dark" data-act="history">ดูสถานะในประวัติ</button>' +
+      '<button class="btn btn-outline" data-act="home">กลับหน้าแรก</button></div></div>';
+  }
+  const method = S.method === 'delivery' ? 'จัดส่งตามที่อยู่' : 'รับที่ ' + S.branch;
+  return '<div class="sheet-wrap" data-act="close-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cf-h">' +
+    '<h2 id="cf-h">ยืนยันการแลกของรางวัล</h2>' +
+    '<p class="lead">' + esc(r.name) + ' × ' + S.qty + ' · ' + esc(method) + ' ใช้ <b style="color:var(--ink)">' + fmt(cost) + ' แต้ม</b> เมื่อยืนยันแล้วไม่สามารถยกเลิกเองได้</p>' +
+    '<button class="btn btn-primary" data-act="redeem"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'กำลังแลก…' : 'ยืนยันการแลก') + '</button>' +
+    '<button class="btn btn-outline" data-act="close"' + (S.busy ? ' disabled' : '') + '>ยกเลิก</button></div></div>';
+}
+
+function viewHistory() {
+  const h = S.history;
+  const head = '<header class="backbar"><button class="icon-btn" data-act="home" aria-label="ย้อนกลับ">' + ICON.back + '</button><span>ประวัติแต้ม</span></header>';
+  if (!h) return head + '<div class="center"><div class="spinner" role="status" aria-label="กำลังโหลด"></div></div>';
+  const tabs = [['all', 'ทั้งหมด'], ['earn', 'ได้รับ'], ['spend', 'ใช้แลก']];
+  const items = h.items.filter((x) => S.histTab === 'all' || (S.histTab === 'earn' ? x.points > 0 : x.points < 0));
+  const rows = items.map((x) => {
+    const earn = x.points > 0;
+    const sub = thDate(x.date) + (x.ref ? ' · ' + x.ref : '') + (x.note && earn ? ' · ' + x.note : '');
+    const badge = x.status ? '<span class="badge' + (x.status === 'รอเตรียมของ' ? ' wait' : '') + '">' + esc(x.status) + '</span>' : '';
+    return '<div class="hist"><div class="ic ' + (earn ? 'earn' : 'spend') + '">' + (earn ? ICON.plus : ICON.box) + '</div>' +
+      '<div class="stack" style="gap:2px;flex:1;min-width:0"><span class="t">' + esc(x.title) + '</span><span class="small muted">' + esc(sub) + '</span>' + badge + '</div>' +
+      '<span class="amt' + (earn ? '' : ' spend') + '">' + (earn ? '+' : '−') + fmt(Math.abs(x.points)) + '</span></div>';
+  }).join('');
+  return head + '<div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:16px">' +
+    '<div class="stat2"><div class="dark"><span>แต้มคงเหลือ</span><b>' + fmt(h.balance) + '</b></div>' +
+    '<div class="light"><span class="muted">สะสมทั้งปี ' + new Date().getFullYear() + '</span><b>' + fmt(h.earnedThisYear) + '</b></div></div>' +
+    '<div class="tabs" role="tablist">' + tabs.map((t) => '<button class="tab" role="tab" data-act="htab" data-t="' + t[0] + '" aria-selected="' + (S.histTab === t[0]) + '">' + t[1] + '</button>').join('') + '</div></div>' +
+    '<main style="flex:1;padding:0 16px 24px">' + (rows || '<p class="empty">ยังไม่มีรายการ</p>') + '</main>';
+}
+
+function nav(active) {
+  return '<nav class="bottom" aria-label="เมนูหลัก">' +
+    '<button data-act="home"' + (active === 'home' ? ' aria-current="page"' : '') + '>' + ICON.home + 'หน้าแรก</button>' +
+    '<button data-act="history"' + (active === 'history' ? ' aria-current="page"' : '') + '>' + ICON.clock + 'ประวัติ</button></nav>';
+}
+
+/* ========= การกระทำ ========= */
+async function loadHistory() {
+  S.history = null;
+  go('history');
+  try {
+    S.history = await api('history');
+    if (S.data && S.data.linked) S.data.balance = S.history.balance;
+    render();
+  } catch (err) { toast(err.message); }
+}
+
+async function refreshHome() {
+  try { applyHome(await api('bootstrap')); if (S.view === 'home') render(); } catch (err) { /* แสดงข้อมูลเดิม */ }
+}
+
+$app.addEventListener('submit', async (e) => {
+  if (e.target.dataset.form !== 'link') return;
+  e.preventDefault();
+  const v = document.getElementById('ident').value.trim();
+  if (!v) { S.linkError = 'กรุณากรอกเบอร์โทรหรือรหัสทีม'; render(); return; }
+  S.busy = true; S.linkError = ''; render();
+  document.getElementById('ident').value = v;
+  try {
+    const d = await api('link', { identifier: v });
+    applyHome(d);
+    S.busy = false;
+    go(d.justLinked ? 'linked' : 'home');
+  } catch (err) {
+    S.busy = false; S.linkError = err.message; render();
+    const el = document.getElementById('ident'); if (el) el.value = v;
+  }
+});
+
+$app.addEventListener('change', (e) => {
+  if (e.target.id === 'branch') S.branch = e.target.value;
+});
+$app.addEventListener('input', (e) => {
+  if (e.target.id === 'addr') S.address = e.target.value;
+});
+
+$app.addEventListener('click', async (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act;
+  if (act === 'close-bg' && e.target !== el) return;
+  if (el.tagName === 'A') e.preventDefault();
+
+  if (act === 'reload') location.reload();
+  else if (act === 'home') { S.sheet = null; go('home'); refreshHome(); }
+  else if (act === 'history') { S.sheet = null; loadHistory(); }
+  else if (act === 'cat') { S.cat = el.dataset.cat; render(); }
+  else if (act === 'open') {
+    S.reward = S.data.rewards.find((r) => r.id === el.dataset.id);
+    S.qty = 1; S.sheet = null; go('reward');
+  }
+  else if (act === 'qty') {
+    const max = Number(document.querySelector('[data-max]').dataset.max);
+    S.qty = Math.min(max, Math.max(1, S.qty + Number(el.dataset.d))); render();
+  }
+  else if (act === 'method') { S.method = el.dataset.m; render(); }
+  else if (act === 'confirm') {
+    if (S.method === 'delivery' && S.address.trim().length < 10) { toast('กรุณากรอกที่อยู่จัดส่งให้ครบ'); return; }
+    S.sheet = 'confirm'; render();
+  }
+  else if ((act === 'close' || act === 'close-bg') && !S.busy) { S.sheet = null; render(); }
+  else if (act === 'redeem' && !S.busy) {
+    S.busy = true; render();
+    try {
+      S.result = await api('redeem', {
+        rewardId: S.reward.id, qty: S.qty, method: S.method,
+        branch: S.method === 'pickup' ? S.branch : '', address: S.method === 'delivery' ? S.address : ''
+      });
+      S.data.balance = S.result.balance;
+      S.sheet = 'done';
+      refreshHome();
+    } catch (err) {
+      S.sheet = null; toast(err.message);
+    }
+    S.busy = false; render();
+  }
+  else if (act === 'htab') { S.histTab = el.dataset.t; render(); }
+});
+
+init();
+</script>
+</body>
+</html>
