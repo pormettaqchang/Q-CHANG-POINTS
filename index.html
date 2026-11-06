@@ -239,11 +239,17 @@ async function init() {
     S.profile = await liff.getProfile().catch(() => null);
     const d = await api('bootstrap');
     applyHome(d);
-    go(d.linked ? 'home' : 'link');
+    route(d);
   } catch (err) {
     S.fatal = err.message || String(err);
     go('error');
   }
+}
+
+function route(d) {
+  if (d.linked) go('home');
+  else if (d.registration) go('pending');
+  else go('link');
 }
 
 function applyHome(d) {
@@ -268,6 +274,8 @@ function render() {
   else if (v === 'error') $app.innerHTML = viewError();
   else if (v === 'link') $app.innerHTML = viewLink();
   else if (v === 'linked') $app.innerHTML = viewLinked();
+  else if (v === 'register') $app.innerHTML = viewRegister();
+  else if (v === 'pending') $app.innerHTML = viewPending();
   else if (v === 'home') $app.innerHTML = viewHome() + nav('home');
   else if (v === 'reward') $app.innerHTML = viewReward();
   else if (v === 'history') $app.innerHTML = viewHistory() + nav('history');
@@ -286,7 +294,7 @@ function viewLink() {
     '<div class="brand">' + logo(true) + '</div>' +
     '<div class="stack tc"><div class="ribbon">POINT REWARDS</div>' +
     '<h1 style="margin-top:8px">เชื่อมบัญชี LINE กับระบบ</h1>' +
-    '<p class="lead">ทำครั้งแรกครั้งเดียว ครั้งต่อไปกดจากเมนู LINE OA แล้วเข้าใช้งานได้ทันที</p></div>' +
+    '<p class="lead">ทำครั้งแรกครั้งเดียว ครั้งต่อไปกดเมนู เช็คแต้มสะสม แล้วเข้าใช้งานได้ทันที</p></div>' +
     '<div class="chip-line"><div class="avatar">' + (pic ? '<img src="' + esc(pic) + '" alt="">' : esc(name.charAt(0))) + '</div>' +
     '<div class="stack" style="gap:0;flex:1;min-width:0"><span class="small muted">เข้าสู่ระบบด้วยบัญชี LINE</span>' +
     '<span style="font-size:16px;font-weight:600">' + esc(name) + '</span></div></div>' +
@@ -297,7 +305,41 @@ function viewLink() {
     '<div class="grow"></div>' +
     '<div class="stack" style="gap:14px"><button class="btn btn-primary" type="submit"' + (S.busy ? ' disabled' : '') + '>' +
     (S.busy ? 'กำลังเชื่อมบัญชี…' : 'เชื่อมบัญชี') + '</button>' +
-    '<p class="small muted tc" style="margin:0">หาข้อมูลไม่พบ? ติดต่อทีม Academy</p></div></form>';
+    '<button type="button" class="btn btn-outline" data-act="register">ยังไม่มีบัญชี? ขอเปิดบัญชีใหม่</button></div></form>';
+}
+
+function viewRegister() {
+  return '<form class="page" data-form="register" novalidate>' +
+    '<div class="stack"><button type="button" class="icon-btn" data-act="tolink" aria-label="ย้อนกลับ" style="margin-left:-12px">' + ICON.back + '</button>' +
+    '<h1>ขอเปิดบัญชีใหม่</h1>' +
+    '<p class="lead">กรอกชื่อ-นามสกุลและเบอร์โทร<b style="color:var(--ink)">ให้ตรงกับในระบบรับงาน Q-CHANG</b> ทีมงานจะตรวจสอบก่อนเปิดบัญชีให้</p></div>' +
+    '<div class="stack"><label for="rname">ชื่อ-นามสกุล</label>' +
+    '<input class="input" id="rname" type="text" autocomplete="name" placeholder="เช่น สมชาย ใจดี" maxlength="100" value="' + esc(S.regName || '') + '"></div>' +
+    '<div class="stack"><label for="rphone">เบอร์โทรศัพท์มือถือ</label>' +
+    '<input class="input" id="rphone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="08X-XXX-XXXX" value="' + esc(S.regPhone || '') + '">' +
+    (S.regError ? '<span class="error" role="alert">' + esc(S.regError) + '</span>' : '') + '</div>' +
+    '<div class="grow"></div>' +
+    '<button class="btn btn-primary" type="submit"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'กำลังส่งคำขอ…' : 'ส่งคำขอเปิดบัญชี') + '</button></form>';
+}
+
+function viewPending() {
+  const r = (S.data && S.data.registration) || {};
+  const rejected = r.status === 'ไม่อนุมัติ';
+  const info = '<div class="summary" style="background:var(--white);border:1px solid var(--line)">' +
+    '<div class="r"><span class="muted">ชื่อ-นามสกุล</span><b>' + esc(r.name) + '</b></div>' +
+    '<div class="r"><span class="muted">เบอร์โทร</span><b>' + esc(r.phone) + '</b></div>' +
+    '<div class="r"><span class="muted">ส่งคำขอเมื่อ</span><b>' + esc(thDate(r.date)) + '</b></div></div>';
+  if (rejected) {
+    return '<div class="page" style="padding-top:64px"><div class="stack tc" style="align-items:center;gap:16px">' +
+      '<h1>คำขอไม่ผ่านการอนุมัติ</h1><p class="lead">เหตุผล: ' + esc(r.reason || '-') + '</p></div>' + info +
+      '<p class="small muted" style="margin:0">ตรวจชื่อและเบอร์ให้ตรงกับระบบรับงาน แล้วส่งคำขอใหม่ได้ หรือติดต่อทีม Academy</p>' +
+      '<div class="grow"></div><div class="stack" style="gap:12px"><button class="btn btn-primary" data-act="register">ส่งคำขอใหม่</button>' +
+      '<button class="btn btn-outline" data-act="tolink">มีบัญชีอยู่แล้ว? เชื่อมบัญชี</button></div></div>';
+  }
+  return '<div class="page" style="padding-top:64px"><div class="stack tc" style="align-items:center;gap:16px">' +
+    '<div class="done-icon" style="width:80px;height:80px">' + ICON.clock.replace('stroke="currentColor"', 'stroke="#EF4F30"').replace(/width="22" height="22"/, 'width="40" height="40"') + '</div>' +
+    '<h1>ส่งคำขอเรียบร้อย</h1><p class="lead">ทีมงานกำลังตรวจสอบกับระบบรับงาน เมื่ออนุมัติแล้ว กดเมนู เช็คแต้มสะสม อีกครั้งเพื่อเข้าใช้งาน</p></div>' + info +
+    '<div class="grow"></div><button class="btn btn-dark" data-act="recheck"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'กำลังตรวจสอบ…' : 'ตรวจสอบสถานะ') + '</button></div>';
 }
 
 function viewLinked() {
@@ -310,7 +352,7 @@ function viewLinked() {
     '<div class="r"><span class="muted">เบอร์โทร</span><b>' + esc(t.phone) + '</b></div>' +
     (t.teamCode ? '<div class="r"><span class="muted">รหัสทีม</span><b>' + esc(t.teamCode) + '</b></div>' : '') +
     '<div class="r"><span class="muted">บัญชี LINE</span><b>' + esc((S.profile && S.profile.displayName) || S.data.lineName || '') + '</b></div></div>' +
-    '<p class="small muted" style="margin:0">ครั้งต่อไปกดเมนูแต้มสะสมใน LINE OA ระบบจะพาเข้าหน้าแรกทันที</p>' +
+    '<p class="small muted" style="margin:0">ครั้งต่อไปกดเมนู เช็คแต้มสะสม ใน LINE ร้านค้าคิวช่าง ระบบจะพาเข้าหน้าแรกทันที</p>' +
     '<div class="grow"></div><button class="btn btn-primary" data-act="home">เริ่มใช้งาน</button></div>';
 }
 
@@ -330,7 +372,7 @@ function viewHome() {
   }).join('');
   return '<header class="topbar">' + logo(false) + '</header>' +
     '<main class="scroll">' +
-    '<p class="greet">สวัสดี คุณ' + esc(d.tech.name) + '</p>' +
+    '<p class="greet">สวัสดี ' + (/^คุณ/.test(d.tech.name) ? '' : 'คุณ') + esc(d.tech.name) + '</p>' +
     '<section class="points" aria-label="แต้มสะสม"><div class="row"><span class="label">แต้มสะสมของคุณ</span><span class="tag">' + esc(d.tech.phone) + '</span></div>' +
     '<div class="num"><b>' + fmt(d.balance) + '</b><span>แต้ม</span></div><div class="rule"></div>' +
     '<div class="row"><span class="small" style="color:#9AA3AD">แลกของรางวัลได้ทันทีด้านล่าง</span><a href="#" data-act="history">ดูประวัติ</a></div></section>' +
@@ -437,6 +479,21 @@ async function refreshHome() {
 }
 
 $app.addEventListener('submit', async (e) => {
+  if (e.target.dataset.form === 'register') {
+    e.preventDefault();
+    S.regName = document.getElementById('rname').value.trim();
+    S.regPhone = document.getElementById('rphone').value.trim();
+    if (!S.regName || !S.regPhone) { S.regError = 'กรุณากรอกให้ครบทั้งสองช่อง'; render(); return; }
+    S.busy = true; S.regError = ''; render();
+    try {
+      const d = await api('register', { name: S.regName, phone: S.regPhone });
+      S.busy = false; S.data = d; S.regName = ''; S.regPhone = '';
+      route(d);
+    } catch (err) {
+      S.busy = false; S.regError = err.message; render();
+    }
+    return;
+  }
   if (e.target.dataset.form !== 'link') return;
   e.preventDefault();
   const v = document.getElementById('ident').value.trim();
@@ -502,6 +559,13 @@ $app.addEventListener('click', async (e) => {
     S.busy = false; render();
   }
   else if (act === 'htab') { S.histTab = el.dataset.t; render(); }
+  else if (act === 'register') { S.regError = ''; go('register'); }
+  else if (act === 'tolink') { S.linkError = ''; go('link'); }
+  else if (act === 'recheck' && !S.busy) {
+    S.busy = true; render();
+    try { const d = await api('bootstrap'); applyHome(d); S.busy = false; route(d); if (!d.linked && d.registration && d.registration.status === 'รอตรวจสอบ') toast('ยังรอการตรวจสอบ'); }
+    catch (err) { S.busy = false; render(); toast(err.message); }
+  }
 });
 
 init();
